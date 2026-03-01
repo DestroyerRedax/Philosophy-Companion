@@ -1,0 +1,21 @@
+{
+  "name": "Philosophy Companion",
+  "short_name": "Philosophy",
+  "description": "An academic guide to the world of thought.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#141415",
+  "theme_color": "#5C5CFF",
+  "icons": [
+    {
+      "src": "https://picsum.photos/seed/philosophy/192/192",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://picsum.photos/seed/philosophy/512/512",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
