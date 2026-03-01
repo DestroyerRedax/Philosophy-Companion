@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 /**
  * Helper component to render formatted academic text.
  * Bolds headers like ভূমিকা, উপসংহার, points (১., ২.), and sub-points.
+ * Automatically handles detected structural headers without Markdown markers.
  */
 function FormattedAnswer({ content }: { content: string }) {
   const lines = content.split('\n');
@@ -23,13 +24,24 @@ function FormattedAnswer({ content }: { content: string }) {
     <div className="space-y-4">
       {lines.map((line, index) => {
         const trimmed = line.trim();
-        // Regular expression to match points like ১., ২., or sub-points
+        // Regular expression to match numeric points like ১., ২., or sub-points
         const isPoint = /^\d+\./.test(trimmed);
-        const isStructural = trimmed.startsWith('ভূমিকা') || 
-                             trimmed.startsWith('উপসংহার') || 
-                             trimmed.startsWith('উপস্থাপনা') ||
-                             trimmed.startsWith('সারসংক্ষেপ');
-        const isSubPoint = trimmed.startsWith('উপ-পয়েন্ট') || trimmed.includes('সাব পয়েন্ট');
+        
+        // Match standard structural headers common in academic writing
+        const structuralKeywords = [
+          'ভূমিকা', 'উপসংহার', 'উপস্থাপনা', 'সারসংক্ষেপ', 
+          'মূল্যায়ন', 'সমালোচনা', 'আলোচনা', 'স্বরূপ', 
+          'বৈশিষ্ট্যসমূহ', 'পার্থক্য', 'উত্তরণ', 'উদ্দেশ্য'
+        ];
+        
+        const isStructural = structuralKeywords.some(keyword => 
+          trimmed.startsWith(keyword) || 
+          (trimmed.length < 50 && trimmed.includes(keyword) && !trimmed.includes(' '))
+        );
+
+        const isSubPoint = trimmed.startsWith('উপ-পয়েন্ট') || 
+                           trimmed.includes('সাব পয়েন্ট') || 
+                           (trimmed.length < 40 && trimmed.endsWith(':'));
 
         if (isStructural || isPoint || isSubPoint) {
           return (
