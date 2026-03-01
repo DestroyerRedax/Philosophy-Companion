@@ -1,21 +1,23 @@
 {
   "name": "Philosophy Companion",
-  "short_name": "Philosophy",
-  "description": "An academic guide to the world of thought.",
+  "short_name": "PhilComp",
+  "description": "Premium final year academic guide for philosophy students.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#141415",
   "theme_color": "#5C5CFF",
   "icons": [
     {
-      "src": "https://picsum.photos/seed/philosophy/192/192",
+      "src": "https://picsum.photos/seed/phil_icon_192/192/192",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "https://picsum.photos/seed/philosophy/512/512",
+      "src": "https://picsum.photos/seed/phil_icon_512/512/512",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

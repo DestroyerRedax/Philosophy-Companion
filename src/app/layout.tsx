@@ -14,6 +14,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  userScalable: false,
 };
 
 export const metadata: Metadata = {
@@ -22,8 +23,11 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'Philosophy Companion',
+  },
+  icons: {
+    apple: 'https://picsum.photos/seed/phil_apple_icon/180/180',
   },
 };
 
