@@ -82,7 +82,7 @@ export default function BookmarksPage() {
 }
 
 function BookmarkItem({ item, onRemove }: { item: SearchResult; onRemove: (e: React.MouseEvent) => void }) {
-  const answerUrl = `/answer?q=${encodeURIComponent(item.question)}&a=${encodeURIComponent(item.answer)}&sc=${item.subjectCode}&sn=${encodeURIComponent(item.subjectName)}&ut=${encodeURIComponent(item.unitTitle)}`;
+  const answerUrl = `/answer?sc=${item.subjectCode}&qid=${item.id}`;
 
   return (
     <Link 

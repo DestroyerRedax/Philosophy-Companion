@@ -1,3 +1,4 @@
+'use client';
 /**
  * @fileOverview Optimized search logic for the Philosophy Companion.
  * Uses a cached flattened index for high-performance offline lookup.
@@ -6,6 +7,7 @@
 import { subjectRegistry } from '@/data/registry';
 
 export interface SearchResult {
+  id: string;
   subjectCode: string;
   subjectName: string;
   unitTitle: string;
@@ -28,6 +30,7 @@ function getFlattenedQuestions(): SearchResult[] {
     subject.units.forEach((unit) => {
       unit.questions.forEach((q) => {
         flattened.push({
+          id: q.id || '',
           subjectCode: subject.code,
           subjectName: subject.name,
           unitTitle: unit.title,

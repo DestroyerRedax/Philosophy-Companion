@@ -1,6 +1,6 @@
 import { AppShell } from '@/components/layout/AppShell';
 import { subjectRegistry } from '@/data/registry';
-import { BookOpen, ArrowLeft, Info, ChevronRight } from 'lucide-react';
+import { BookOpen, ArrowLeft, Info, ChevronRight, HelpCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -8,6 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 /**
  * Subject View Screen - Premium Polish
  * Provides a structured, expandable list of units and questions.
+ * Implements inline dropdown for Part A questions.
  */
 export default async function SubjectPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -61,48 +62,77 @@ export default async function SubjectPage({ params }: { params: Promise<{ code: 
 
           {subject.units.length > 0 ? (
             <Accordion type="single" collapsible className="w-full space-y-medium">
-              {subject.units.map((unit, uIndex) => (
-                <AccordionItem 
-                  key={uIndex} 
-                  value={`unit-${uIndex}`} 
-                  className="dark-academic-card border-none overflow-hidden"
-                >
-                  <AccordionTrigger className="px-large py-6 hover:no-underline hover:bg-secondary/20 transition-all duration-300">
-                    <div className="flex flex-col items-start text-left gap-1">
-                      <span className="text-lg font-headline font-bold text-foreground group-data-[state=open]:text-primary transition-colors">
-                        {unit.title}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest bg-secondary/50 px-2 py-0.5 rounded">
-                        {unit.questions.length} Inquiries
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-medium pb-medium pt-0">
-                    <div className="space-y-1 mt-small border-t border-border/20 pt-small">
-                      {unit.questions.map((q, qIndex) => {
-                        const answerUrl = `/answer?q=${encodeURIComponent(q.question)}&a=${encodeURIComponent(q.answer)}&sc=${subject.code}&sn=${encodeURIComponent(subject.name)}&ut=${encodeURIComponent(unit.title)}`;
-                        return (
-                          <Link 
-                            key={qIndex}
-                            href={answerUrl}
-                            className="flex items-center justify-between p-medium hover:bg-primary/10 rounded-lg group transition-all duration-300 active:scale-[0.99]"
-                          >
-                            <div className="flex items-start gap-medium flex-1 min-w-0">
-                              <span className="text-xs font-mono text-accent/50 mt-1 shrink-0 font-bold">
-                                {(qIndex + 1).toString().padStart(2, '0')}
-                              </span>
-                              <p className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors leading-relaxed">
-                                {q.question}
-                              </p>
-                            </div>
-                            <ChevronRight className="size-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 ml-small" />
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+              {subject.units.map((unit, uIndex) => {
+                const isPartA = unit.title.includes('বিভাগ ক');
+                
+                return (
+                  <AccordionItem 
+                    key={uIndex} 
+                    value={`unit-${uIndex}`} 
+                    className="dark-academic-card border-none overflow-hidden"
+                  >
+                    <AccordionTrigger className="px-large py-6 hover:no-underline hover:bg-secondary/20 transition-all duration-300">
+                      <div className="flex flex-col items-start text-left gap-1">
+                        <span className="text-lg font-headline font-bold text-foreground group-data-[state=open]:text-primary transition-colors">
+                          {unit.title}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest bg-secondary/50 px-2 py-0.5 rounded">
+                          {unit.questions.length} Inquiries
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-medium pb-medium pt-0">
+                      <div className="space-y-1 mt-small border-t border-border/20 pt-small">
+                        {isPartA ? (
+                          <Accordion type="multiple" className="w-full">
+                            {unit.questions.map((q, qIndex) => (
+                              <AccordionItem key={qIndex} value={`q-${qIndex}`} className="border-none">
+                                <AccordionTrigger className="p-medium hover:no-underline hover:bg-primary/10 rounded-lg group transition-all duration-300 text-left">
+                                  <div className="flex items-start gap-medium flex-1 min-w-0">
+                                    <span className="text-xs font-mono text-accent/50 mt-1 shrink-0 font-bold">
+                                      {(qIndex + 1).toString().padStart(2, '0')}
+                                    </span>
+                                    <p className="text-sm font-medium leading-relaxed group-hover:text-primary transition-colors">
+                                      {q.question}
+                                    </p>
+                                  </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="px-xlarge py-medium text-muted-foreground border-l-2 border-primary/20 ml-medium">
+                                  <div className="flex gap-2">
+                                    <HelpCircle className="size-4 text-primary shrink-0 mt-0.5" />
+                                    <p className="text-sm italic">{q.answer}</p>
+                                  </div>
+                                </AccordionContent>
+                              </AccordionItem>
+                            ))}
+                          </Accordion>
+                        ) : (
+                          unit.questions.map((q, qIndex) => {
+                            const answerUrl = `/answer?sc=${subject.code}&qid=${q.id}`;
+                            return (
+                              <Link 
+                                key={qIndex}
+                                href={answerUrl}
+                                className="flex items-center justify-between p-medium hover:bg-primary/10 rounded-lg group transition-all duration-300 active:scale-[0.99]"
+                              >
+                                <div className="flex items-start gap-medium flex-1 min-w-0">
+                                  <span className="text-xs font-mono text-accent/50 mt-1 shrink-0 font-bold">
+                                    {(qIndex + 1).toString().padStart(2, '0')}
+                                  </span>
+                                  <p className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors leading-relaxed">
+                                    {q.question}
+                                  </p>
+                                </div>
+                                <ChevronRight className="size-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 ml-small" />
+                              </Link>
+                            );
+                          })
+                        )}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
             </Accordion>
           ) : (
             <div className="p-xlarge text-center border border-dashed border-border/50 rounded-xl bg-card/30">

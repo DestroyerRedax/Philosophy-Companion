@@ -55,7 +55,7 @@ export default function Home() {
         {lastRead && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500 ease-out">
             <Link 
-              href={`/answer?q=${encodeURIComponent(lastRead.question)}&a=${encodeURIComponent(lastRead.answer)}&sc=${lastRead.subjectCode}&sn=${encodeURIComponent(lastRead.subjectName)}&ut=${encodeURIComponent(lastRead.unitTitle)}`}
+              href={`/answer?sc=${lastRead.subjectCode}&qid=${lastRead.id}`}
               className="flex items-center justify-between p-large rounded-2xl bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-all group"
             >
               <div className="flex items-center gap-medium">

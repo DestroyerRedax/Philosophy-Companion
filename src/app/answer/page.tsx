@@ -9,50 +9,55 @@ import { Suspense, useEffect, useState } from 'react';
 import { setLastRead, isBookmarked, toggleBookmark } from '@/lib/storage-service';
 import { SearchResult } from '@/lib/search-service';
 import { useToast } from '@/hooks/use-toast';
+import { subjectRegistry } from '@/data/registry';
 
 /**
  * Answer View Component - Premium Polish
- * Provides an optimal reading environment with high line-height and clear hierarchy.
+ * Provides an optimal reading environment.
+ * Now fetches data from Registry via IDs to avoid 414 error.
  */
 function AnswerContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
   
-  const question = searchParams.get('q');
-  const answer = searchParams.get('a');
-  const subjectCode = searchParams.get('sc') || 'N/A';
-  const subjectName = searchParams.get('sn') || 'General Archive';
-  const unitTitle = searchParams.get('ut') || 'Reference Material';
+  const sc = searchParams.get('sc');
+  const qid = searchParams.get('qid');
 
+  const [data, setData] = useState<SearchResult | null>(null);
   const [bookmarked, setBookmarked] = useState(false);
 
   useEffect(() => {
-    if (question && answer) {
-      const item: SearchResult = {
-        question,
-        answer,
-        subjectCode,
-        subjectName,
-        unitTitle
-      };
-      setLastRead(item);
-      setBookmarked(isBookmarked(question));
+    if (sc && qid) {
+      const subject = subjectRegistry[sc];
+      if (subject) {
+        let found = false;
+        for (const unit of subject.units) {
+          const q = unit.questions.find(item => item.id === qid);
+          if (q) {
+            const item: SearchResult = {
+              id: qid,
+              question: q.question,
+              answer: q.answer,
+              subjectCode: subject.code,
+              subjectName: subject.name,
+              unitTitle: unit.title
+            };
+            setData(item);
+            setLastRead(item);
+            setBookmarked(isBookmarked(q.question));
+            found = true;
+            break;
+          }
+        }
+      }
     }
-  }, [question, answer, subjectCode, subjectName, unitTitle]);
+  }, [sc, qid]);
 
   const handleToggleBookmark = () => {
-    if (!question || !answer) return;
+    if (!data) return;
     
-    const item: SearchResult = {
-      question,
-      answer,
-      subjectCode,
-      subjectName,
-      unitTitle
-    };
-    
-    const added = toggleBookmark(item);
+    const added = toggleBookmark(data);
     setBookmarked(added);
     
     toast({
@@ -61,12 +66,12 @@ function AnswerContent() {
     });
   };
 
-  if (!question || !answer) {
+  if (!data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-medium animate-in fade-in duration-700">
         <MessageSquare className="size-12 text-muted-foreground/20" />
         <h2 className="text-xl font-bold font-headline text-foreground">Content Unavailable</h2>
-        <p className="text-muted-foreground text-sm text-center max-w-xs">The requested academic record could not be retrieved from the local cache.</p>
+        <p className="text-muted-foreground text-sm text-center max-w-xs">The requested academic record could not be retrieved from the archive.</p>
         <Button 
           variant="outline" 
           onClick={() => router.back()} 
@@ -105,10 +110,10 @@ function AnswerContent() {
         <div className="space-y-small">
           <div className="flex items-center gap-2 text-accent/80 font-mono text-[10px] uppercase tracking-[0.3em] font-bold">
             <Quote className="size-3 text-primary" />
-            {subjectName} • {unitTitle}
+            {data.subjectName} • {data.unitTitle}
           </div>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold font-headline leading-[1.2] text-foreground tracking-tight selection:bg-primary/40">
-            {question}
+            {data.question}
           </h2>
         </div>
       </header>
@@ -123,9 +128,9 @@ function AnswerContent() {
             <div className="w-[1px] h-full bg-border" />
           </div>
           <div className="flex-1">
-            <p className="answer-body whitespace-pre-wrap selection:bg-primary/20 transition-all duration-300">
-              {answer}
-            </p>
+            <div className="answer-body whitespace-pre-wrap selection:bg-primary/20 transition-all duration-300">
+              {data.answer}
+            </div>
           </div>
         </div>
       </article>

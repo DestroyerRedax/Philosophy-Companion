@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
  * Search Result Item - Memoized for list performance
  */
 const SearchResultItem = memo(({ result }: { result: SearchResult }) => {
-  const answerUrl = `/answer?q=${encodeURIComponent(result.question)}&a=${encodeURIComponent(result.answer)}&sc=${result.subjectCode}&sn=${encodeURIComponent(result.subjectName)}&ut=${encodeURIComponent(result.unitTitle)}`;
+  const answerUrl = `/answer?sc=${result.subjectCode}&qid=${result.id}`;
 
   return (
     <Link 
@@ -96,7 +96,7 @@ export default function SearchPage() {
                   Found {results.length} relevant record{results.length !== 1 ? 's' : ''}
                 </p>
                 {results.map((result, index) => (
-                  <SearchResultItem key={`${result.subjectCode}-${index}`} result={result} />
+                  <SearchResultItem key={`${result.id}-${index}`} result={result} />
                 ))}
               </div>
             ) : (
