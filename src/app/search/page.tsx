@@ -80,9 +80,11 @@ export default function SearchPage() {
 }
 
 function SearchResultItem({ result }: { result: SearchResult }) {
+  const answerUrl = `/answer?q=${encodeURIComponent(result.question)}&a=${encodeURIComponent(result.answer)}&sc=${result.subjectCode}&sn=${encodeURIComponent(result.subjectName)}&ut=${encodeURIComponent(result.unitTitle)}`;
+
   return (
     <Link 
-      href={`/answer?q=${encodeURIComponent(result.question)}&a=${encodeURIComponent(result.answer)}`}
+      href={answerUrl}
       className="dark-academic-card p-large group block hover:bg-primary/5 active:scale-[0.99] transition-all"
     >
       <div className="space-y-medium">

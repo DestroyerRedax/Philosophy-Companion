@@ -79,23 +79,26 @@ export default async function SubjectPage({ params }: { params: Promise<{ code: 
                   </AccordionTrigger>
                   <AccordionContent className="px-medium pb-medium pt-0">
                     <div className="space-y-1 mt-small border-t border-border/20 pt-small">
-                      {unit.questions.map((q, qIndex) => (
-                        <Link 
-                          key={qIndex}
-                          href={`/answer?q=${encodeURIComponent(q.question)}&a=${encodeURIComponent(q.answer)}`}
-                          className="flex items-center justify-between p-medium hover:bg-primary/10 rounded-lg group transition-all duration-300 active:scale-[0.99]"
-                        >
-                          <div className="flex items-start gap-medium flex-1 min-w-0">
-                            <span className="text-xs font-mono text-accent/50 mt-1 shrink-0 font-bold">
-                              {(qIndex + 1).toString().padStart(2, '0')}
-                            </span>
-                            <p className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors leading-relaxed">
-                              {q.question}
-                            </p>
-                          </div>
-                          <ChevronRight className="size-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 ml-small" />
-                        </Link>
-                      ))}
+                      {unit.questions.map((q, qIndex) => {
+                        const answerUrl = `/answer?q=${encodeURIComponent(q.question)}&a=${encodeURIComponent(q.answer)}&sc=${subject.code}&sn=${encodeURIComponent(subject.name)}&ut=${encodeURIComponent(unit.title)}`;
+                        return (
+                          <Link 
+                            key={qIndex}
+                            href={answerUrl}
+                            className="flex items-center justify-between p-medium hover:bg-primary/10 rounded-lg group transition-all duration-300 active:scale-[0.99]"
+                          >
+                            <div className="flex items-start gap-medium flex-1 min-w-0">
+                              <span className="text-xs font-mono text-accent/50 mt-1 shrink-0 font-bold">
+                                {(qIndex + 1).toString().padStart(2, '0')}
+                              </span>
+                              <p className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors leading-relaxed">
+                                {q.question}
+                              </p>
+                            </div>
+                            <ChevronRight className="size-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 ml-small" />
+                          </Link>
+                        );
+                      })}
                     </div>
                   </AccordionContent>
                 </AccordionItem>

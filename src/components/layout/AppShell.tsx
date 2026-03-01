@@ -1,9 +1,10 @@
 import React from 'react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarInset, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from '@/components/ui/sidebar';
-import { BookOpen, Home, MessageSquare, Settings, GraduationCap, Archive, Search } from 'lucide-react';
+import { BookOpen, Home, MessageSquare, Settings, GraduationCap, Archive, Search, Star } from 'lucide-react';
 import Link from 'next/link';
 import { APP_STRINGS, ACADEMIC_SUBJECTS } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
+import { Toaster } from '@/components/ui/toaster';
 
 /**
  * AppShell - Premium Navigation
@@ -46,6 +47,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <Link href="/search" className="hover:bg-primary/10 transition-colors rounded-lg h-11 px-large">
                       <Search className="size-5" />
                       <span className="font-medium">Search</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="My Collection">
+                    <Link href="/bookmarks" className="hover:bg-primary/10 transition-colors rounded-lg h-11 px-large">
+                      <Star className="size-5" />
+                      <span className="font-medium">Collection</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -122,6 +131,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {children}
             </div>
           </main>
+          <Toaster />
         </SidebarInset>
       </div>
     </SidebarProvider>

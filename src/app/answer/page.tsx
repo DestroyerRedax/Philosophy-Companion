@@ -2,10 +2,13 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { AppShell } from '@/components/layout/AppShell';
-import { ArrowLeft, BookOpen, MessageSquare, Quote } from 'lucide-react';
+import { ArrowLeft, BookOpen, MessageSquare, Quote, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { setLastRead, isBookmarked, toggleBookmark } from '@/lib/storage-service';
+import { SearchResult } from '@/lib/search-service';
+import { useToast } from '@/hooks/use-toast';
 
 /**
  * Answer View Component - Premium Polish
@@ -14,9 +17,49 @@ import { Suspense } from 'react';
 function AnswerContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { toast } = useToast();
   
   const question = searchParams.get('q');
   const answer = searchParams.get('a');
+  const subjectCode = searchParams.get('sc') || 'N/A';
+  const subjectName = searchParams.get('sn') || 'General Archive';
+  const unitTitle = searchParams.get('ut') || 'Reference Material';
+
+  const [bookmarked, setBookmarked] = useState(false);
+
+  useEffect(() => {
+    if (question && answer) {
+      const item: SearchResult = {
+        question,
+        answer,
+        subjectCode,
+        subjectName,
+        unitTitle
+      };
+      setLastRead(item);
+      setBookmarked(isBookmarked(question));
+    }
+  }, [question, answer, subjectCode, subjectName, unitTitle]);
+
+  const handleToggleBookmark = () => {
+    if (!question || !answer) return;
+    
+    const item: SearchResult = {
+      question,
+      answer,
+      subjectCode,
+      subjectName,
+      unitTitle
+    };
+    
+    const added = toggleBookmark(item);
+    setBookmarked(added);
+    
+    toast({
+      title: added ? "Bookmark Added" : "Bookmark Removed",
+      description: added ? "This inquiry has been saved to your collection." : "The inquiry was removed from your collection.",
+    });
+  };
 
   if (!question || !answer) {
     return (
@@ -38,20 +81,31 @@ function AnswerContent() {
   return (
     <div className="max-w-3xl mx-auto space-y-xlarge py-large animate-in fade-in slide-in-from-bottom-6 duration-1000 ease-out">
       <header className="space-y-medium">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => router.back()}
-          className="text-muted-foreground hover:text-primary -ml-3 transition-all hover:pl-2"
-        >
-          <ArrowLeft className="size-4 mr-2" />
-          Back to Subject
-        </Button>
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => router.back()}
+            className="text-muted-foreground hover:text-primary -ml-3 transition-all hover:pl-2"
+          >
+            <ArrowLeft className="size-4 mr-2" />
+            Back
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleToggleBookmark}
+            className={`rounded-full transition-all ${bookmarked ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
+          >
+            <Star className={`size-5 ${bookmarked ? 'fill-current' : ''}`} />
+          </Button>
+        </div>
         
         <div className="space-y-small">
           <div className="flex items-center gap-2 text-accent/80 font-mono text-[10px] uppercase tracking-[0.3em] font-bold">
             <Quote className="size-3 text-primary" />
-            Philosophical Inquiry
+            {subjectName} • {unitTitle}
           </div>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold font-headline leading-[1.2] text-foreground tracking-tight selection:bg-primary/40">
             {question}
