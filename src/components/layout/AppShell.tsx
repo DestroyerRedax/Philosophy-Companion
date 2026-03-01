@@ -1,6 +1,6 @@
 import React from 'react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarInset, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from '@/components/ui/sidebar';
-import { BookOpen, Home, MessageSquare, Settings, GraduationCap, Archive } from 'lucide-react';
+import { BookOpen, Home, MessageSquare, Settings, GraduationCap, Archive, Search } from 'lucide-react';
 import Link from 'next/link';
 import { APP_STRINGS, ACADEMIC_SUBJECTS } from '@/lib/constants';
 import { Separator } from '@/components/ui/separator';
@@ -38,6 +38,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <Link href="/" className="hover:bg-primary/10 transition-colors rounded-lg h-11 px-large">
                       <Home className="size-5" />
                       <span className="font-medium">Home</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="Academic Search">
+                    <Link href="/search" className="hover:bg-primary/10 transition-colors rounded-lg h-11 px-large">
+                      <Search className="size-5" />
+                      <span className="font-medium">Search</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -101,6 +109,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span className="size-1.5 rounded-full bg-green-500 animate-pulse" />
                 Verified Offline
               </div>
+              <Link href="/search" className="rounded-full p-2 hover:bg-secondary/50 transition-all border border-transparent hover:border-border/50">
+                <Search className="size-4 text-muted-foreground" />
+              </Link>
               <button className="rounded-full p-2 hover:bg-secondary/50 transition-all border border-transparent hover:border-border/50">
                 <Settings className="size-4 text-muted-foreground" />
               </button>
