@@ -1,9 +1,9 @@
 import { AppShell } from '@/components/layout/AppShell';
 import { subjectRegistry } from '@/data/registry';
-import { BookOpen, ArrowLeft, Info, HelpCircle } from 'lucide-react';
+import { BookOpen, ArrowLeft, Info, HelpCircle, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 export default async function SubjectPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -41,7 +41,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ code: 
                 {subject.name}
               </h2>
             </div>
-            <Badge variant="outline" className="w-fit border-primary/30 text-primary">
+            <Badge variant="outline" className="w-fit border-primary/30 text-primary uppercase tracking-tighter text-[10px]">
               Academic Syllabus 2024-25
             </Badge>
           </div>
@@ -54,24 +54,45 @@ export default async function SubjectPage({ params }: { params: Promise<{ code: 
           </div>
 
           {subject.units.length > 0 ? (
-            <div className="grid grid-cols-1 gap-medium">
-              {subject.units.map((unit, index) => (
-                <Card key={index} className="dark-academic-card hover:bg-secondary/20 cursor-default">
-                  <CardHeader className="flex flex-row items-center justify-between py-medium">
-                    <CardTitle className="text-lg font-headline flex items-center gap-medium">
-                      <span className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20">
-                        {index + 1}
+            <Accordion type="single" collapsible className="w-full space-y-medium">
+              {subject.units.map((unit, uIndex) => (
+                <AccordionItem 
+                  key={uIndex} 
+                  value={`unit-${uIndex}`} 
+                  className="dark-academic-card border-none overflow-hidden"
+                >
+                  <AccordionTrigger className="px-large py-large hover:no-underline hover:bg-secondary/10 transition-colors">
+                    <div className="flex flex-col items-start text-left gap-1">
+                      <span className="text-lg font-headline font-bold text-foreground">{unit.title}</span>
+                      <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                        {unit.questions.length} Questions Available
                       </span>
-                      {unit.title}
-                    </CardTitle>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary px-2 py-1 rounded">
-                      <HelpCircle className="size-3" />
-                      {unit.questions.length} Questions
                     </div>
-                  </CardHeader>
-                </Card>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-medium pb-medium pt-0">
+                    <div className="space-y-1 mt-small border-t border-border/30 pt-small">
+                      {unit.questions.map((q, qIndex) => (
+                        <Link 
+                          key={qIndex}
+                          href={`/answer?q=${encodeURIComponent(q.question)}&a=${encodeURIComponent(q.answer)}`}
+                          className="flex items-center justify-between p-medium hover:bg-secondary/40 rounded-md group transition-all duration-200"
+                        >
+                          <div className="flex items-start gap-medium flex-1 min-w-0">
+                            <span className="text-xs font-mono text-accent/60 mt-1 shrink-0">
+                              {(qIndex + 1).toString().padStart(2, '0')}
+                            </span>
+                            <p className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors leading-snug">
+                              {q.question}
+                            </p>
+                          </div>
+                          <ChevronRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 ml-small" />
+                        </Link>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
               ))}
-            </div>
+            </Accordion>
           ) : (
             <div className="p-xlarge text-center border-2 border-dashed border-border rounded-lg bg-card/50">
               <p className="text-muted-foreground italic">
