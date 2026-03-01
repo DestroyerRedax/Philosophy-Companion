@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 /**
  * Helper component to render formatted academic text.
  * Bolds headers like ভূমিকা, উপসংহার, points (১., ২.), and sub-points.
- * Automatically handles detected structural headers without Markdown markers.
+ * Automatically handles tables and structural headers.
  */
 function FormattedAnswer({ content }: { content: string }) {
   const lines = content.split('\n');
@@ -24,24 +24,31 @@ function FormattedAnswer({ content }: { content: string }) {
     <div className="space-y-4">
       {lines.map((line, index) => {
         const trimmed = line.trim();
+        
+        // Handle Tables (Simple HTML check)
+        if (trimmed.startsWith('<table') || trimmed.includes('</table>') || trimmed.startsWith('<tr') || trimmed.startsWith('<td') || trimmed.startsWith('<th')) {
+          return <div key={index} dangerouslySetInnerHTML={{ __html: line }} className="overflow-x-auto my-4" />;
+        }
+
         // Regular expression to match numeric points like ১., ২., or sub-points
-        const isPoint = /^\d+\./.test(trimmed);
+        const isPoint = /^\d+\./.test(trimmed) || /^[১-৯]+\./.test(trimmed);
         
         // Match standard structural headers common in academic writing
         const structuralKeywords = [
           'ভূমিকা', 'উপসংহার', 'উপস্থাপনা', 'সারসংক্ষেপ', 
           'মূল্যায়ন', 'সমালোচনা', 'আলোচনা', 'স্বরূপ', 
-          'বৈশিষ্ট্যসমূহ', 'পার্থক্য', 'উত্তরণ', 'উদ্দেশ্য'
+          'বৈশিষ্ট্যসমূহ', 'পার্থক্য', 'উত্তরণ', 'উদ্দেশ্য', 'ব্যাখ্যা', 'লক্ষ্য ও সাফল্য'
         ];
         
         const isStructural = structuralKeywords.some(keyword => 
-          trimmed.startsWith(keyword) || 
+          trimmed === keyword || 
+          trimmed.startsWith(keyword + ':') ||
           (trimmed.length < 50 && trimmed.includes(keyword) && !trimmed.includes(' '))
         );
 
         const isSubPoint = trimmed.startsWith('উপ-পয়েন্ট') || 
                            trimmed.includes('সাব পয়েন্ট') || 
-                           (trimmed.length < 40 && trimmed.endsWith(':'));
+                           (trimmed.length < 60 && trimmed.endsWith(':'));
 
         if (isStructural || isPoint || isSubPoint) {
           return (
@@ -166,8 +173,6 @@ function AnswerContent() {
         </div>
       </header>
 
-      <Separator className="bg-border/30" />
-
       <article className="prose prose-invert max-w-none">
         <div className="flex items-start gap-xlarge">
           <div className="hidden md:flex flex-col items-center gap-4 pt-2 opacity-20">
@@ -184,7 +189,7 @@ function AnswerContent() {
       <footer className="pt-xlarge border-t border-border/20 text-center">
         <div className="inline-block px-4 py-1 rounded-full border border-border/40 bg-secondary/10">
           <p className="text-[9px] text-muted-foreground uppercase tracking-[0.4em] font-bold opacity-60">
-            Academic Archive • Reference Verified
+            Authorized Academic Archive • Reference Verified
           </p>
         </div>
       </footer>
