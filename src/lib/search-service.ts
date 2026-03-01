@@ -1,6 +1,6 @@
 /**
- * @fileOverview Search logic for the Philosophy Companion.
- * Flattens the nested subject data into a searchable list of entries.
+ * @fileOverview Optimized search logic for the Philosophy Companion.
+ * Uses a cached flattened index for high-performance offline lookup.
  */
 
 import { subjectRegistry } from '@/data/registry';
@@ -13,40 +13,52 @@ export interface SearchResult {
   answer: string;
 }
 
+let cachedFlattenedQuestions: SearchResult[] | null = null;
+
+/**
+ * Flattens the nested subject registry into a searchable flat array.
+ * Results are cached to avoid redundant processing.
+ */
+function getFlattenedQuestions(): SearchResult[] {
+  if (cachedFlattenedQuestions) return cachedFlattenedQuestions;
+
+  const flattened: SearchResult[] = [];
+
+  Object.values(subjectRegistry).forEach((subject) => {
+    subject.units.forEach((unit) => {
+      unit.questions.forEach((q) => {
+        flattened.push({
+          subjectCode: subject.code,
+          subjectName: subject.name,
+          unitTitle: unit.title,
+          question: q.question,
+          answer: q.answer,
+        });
+      });
+    });
+  });
+
+  cachedFlattenedQuestions = flattened;
+  return flattened;
+}
+
 /**
  * Searches across all registered subjects, units, and questions.
- * @param query The search string provided by the user.
- * @returns An array of matching SearchResult objects.
+ * Performance optimized for real-time live search.
  */
 export function searchQuestions(query: string): SearchResult[] {
   const normalizedQuery = query.toLowerCase().trim();
   if (normalizedQuery.length < 2) return [];
 
-  const results: SearchResult[] = [];
+  const data = getFlattenedQuestions();
 
-  // Iterate through each subject in the registry
-  Object.values(subjectRegistry).forEach((subject) => {
-    // Check if the subject name itself matches (though usually we want question-level results)
-    const subjectMatches = subject.name.toLowerCase().includes(normalizedQuery);
-
-    subject.units.forEach((unit) => {
-      unit.questions.forEach((q) => {
-        const questionMatches = q.question.toLowerCase().includes(normalizedQuery);
-        const answerMatches = q.answer.toLowerCase().includes(normalizedQuery);
-        const unitMatches = unit.title.toLowerCase().includes(normalizedQuery);
-
-        if (subjectMatches || unitMatches || questionMatches || answerMatches) {
-          results.push({
-            subjectCode: subject.code,
-            subjectName: subject.name,
-            unitTitle: unit.title,
-            question: q.question,
-            answer: q.answer,
-          });
-        }
-      });
-    });
+  return data.filter((item) => {
+    return (
+      item.question.toLowerCase().includes(normalizedQuery) ||
+      item.answer.toLowerCase().includes(normalizedQuery) ||
+      item.subjectName.toLowerCase().includes(normalizedQuery) ||
+      item.unitTitle.toLowerCase().includes(normalizedQuery) ||
+      item.subjectCode.toLowerCase().includes(normalizedQuery)
+    );
   });
-
-  return results;
 }

@@ -10,15 +10,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Noto Sans Bengali', 'sans-serif'],
-        headline: ['Noto Sans Bengali', 'sans-serif'],
+        body: ['var(--font-noto-bengali)', 'sans-serif'],
+        headline: ['var(--font-noto-bengali)', 'sans-serif'],
         code: ['monospace'],
       },
       spacing: {
-        'small': '0.5rem',   // 8px
-        'medium': '1rem',   // 16px
-        'large': '1.5rem',  // 24px
-        'xlarge': '2rem',   // 32px
+        'small': '0.5rem',
+        'medium': '1rem',
+        'large': '1.5rem',
+        'xlarge': '2rem',
       },
       colors: {
         background: 'hsl(var(--background))',

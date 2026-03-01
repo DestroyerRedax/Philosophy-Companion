@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Input } from '@/components/ui/input';
 import { Search, ArrowRight, BookOpen, Hash, MessageSquareOff } from 'lucide-react';
@@ -9,8 +9,48 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 
 /**
+ * Search Result Item - Memoized for list performance
+ */
+const SearchResultItem = memo(({ result }: { result: SearchResult }) => {
+  const answerUrl = `/answer?q=${encodeURIComponent(result.question)}&a=${encodeURIComponent(result.answer)}&sc=${result.subjectCode}&sn=${encodeURIComponent(result.subjectName)}&ut=${encodeURIComponent(result.unitTitle)}`;
+
+  return (
+    <Link 
+      href={answerUrl}
+      className="dark-academic-card p-large group block hover:bg-primary/5 active:scale-[0.99] transition-all"
+    >
+      <div className="space-y-medium">
+        <div className="flex items-center justify-between gap-small">
+          <div className="flex items-center gap-small">
+            <Badge variant="outline" className="text-[9px] font-mono border-accent/30 text-accent uppercase tracking-wider">
+              {result.subjectCode}
+            </Badge>
+            <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest truncate max-w-[200px]">
+              {result.subjectName}
+            </span>
+          </div>
+          <ArrowRight className="size-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+        </div>
+
+        <div className="space-y-small">
+          <h4 className="text-base font-bold text-foreground group-hover:text-primary transition-colors leading-tight line-clamp-2">
+            {result.question}
+          </h4>
+          <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium italic">
+            <BookOpen className="size-3" />
+            {result.unitTitle}
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+});
+
+SearchResultItem.displayName = 'SearchResultItem';
+
+/**
  * Global Search Screen
- * Provides an offline, real-time search interface for the entire philosophy archive.
+ * Optimized for high-performance offline filtering.
  */
 export default function SearchPage() {
   const [query, setQuery] = useState('');
@@ -56,7 +96,7 @@ export default function SearchPage() {
                   Found {results.length} relevant record{results.length !== 1 ? 's' : ''}
                 </p>
                 {results.map((result, index) => (
-                  <SearchResultItem key={index} result={result} />
+                  <SearchResultItem key={`${result.subjectCode}-${index}`} result={result} />
                 ))}
               </div>
             ) : (
@@ -76,41 +116,6 @@ export default function SearchPage() {
         </div>
       </div>
     </AppShell>
-  );
-}
-
-function SearchResultItem({ result }: { result: SearchResult }) {
-  const answerUrl = `/answer?q=${encodeURIComponent(result.question)}&a=${encodeURIComponent(result.answer)}&sc=${result.subjectCode}&sn=${encodeURIComponent(result.subjectName)}&ut=${encodeURIComponent(result.unitTitle)}`;
-
-  return (
-    <Link 
-      href={answerUrl}
-      className="dark-academic-card p-large group block hover:bg-primary/5 active:scale-[0.99] transition-all"
-    >
-      <div className="space-y-medium">
-        <div className="flex items-center justify-between gap-small">
-          <div className="flex items-center gap-small">
-            <Badge variant="outline" className="text-[9px] font-mono border-accent/30 text-accent uppercase tracking-wider">
-              {result.subjectCode}
-            </Badge>
-            <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest truncate max-w-[200px]">
-              {result.subjectName}
-            </span>
-          </div>
-          <ArrowRight className="size-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-        </div>
-
-        <div className="space-y-small">
-          <h4 className="text-base font-bold text-foreground group-hover:text-primary transition-colors leading-tight line-clamp-2">
-            {result.question}
-          </h4>
-          <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium italic">
-            <BookOpen className="size-3" />
-            {result.unitTitle}
-          </div>
-        </div>
-      </div>
-    </Link>
   );
 }
 
