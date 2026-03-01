@@ -8,8 +8,8 @@ import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
 
 /**
- * Answer View Component
- * Displays the full philosophical inquiry and its academic response.
+ * Answer View Component - Premium Polish
+ * Provides an optimal reading environment with high line-height and clear hierarchy.
  */
 function AnswerContent() {
   const searchParams = useSearchParams();
@@ -20,11 +20,15 @@ function AnswerContent() {
 
   if (!question || !answer) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-medium">
-        <MessageSquare className="size-12 text-muted-foreground opacity-20" />
-        <h2 className="text-xl font-bold font-headline">Content unavailable</h2>
-        <p className="text-muted-foreground text-sm">The requested answer could not be retrieved from the current context.</p>
-        <Button variant="ghost" onClick={() => router.back()} className="mt-medium">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-medium animate-in fade-in duration-700">
+        <MessageSquare className="size-12 text-muted-foreground/20" />
+        <h2 className="text-xl font-bold font-headline text-foreground">Content Unavailable</h2>
+        <p className="text-muted-foreground text-sm text-center max-w-xs">The requested academic record could not be retrieved from the local cache.</p>
+        <Button 
+          variant="outline" 
+          onClick={() => router.back()} 
+          className="mt-medium rounded-full border-primary/30 text-primary hover:bg-primary/5"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
       </div>
@@ -32,40 +36,40 @@ function AnswerContent() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-xlarge py-large animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="max-w-3xl mx-auto space-y-xlarge py-large animate-in fade-in slide-in-from-bottom-6 duration-1000 ease-out">
       <header className="space-y-medium">
         <Button 
           variant="ghost" 
           size="sm" 
           onClick={() => router.back()}
-          className="text-muted-foreground hover:text-primary -ml-3 transition-colors"
+          className="text-muted-foreground hover:text-primary -ml-3 transition-all hover:pl-2"
         >
           <ArrowLeft className="size-4 mr-2" />
           Back to Subject
         </Button>
         
         <div className="space-y-small">
-          <div className="flex items-center gap-2 text-accent font-mono text-xs uppercase tracking-widest">
-            <Quote className="size-3" />
+          <div className="flex items-center gap-2 text-accent/80 font-mono text-[10px] uppercase tracking-[0.3em] font-bold">
+            <Quote className="size-3 text-primary" />
             Philosophical Inquiry
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold font-headline leading-tight text-foreground tracking-tight">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold font-headline leading-[1.2] text-foreground tracking-tight selection:bg-primary/40">
             {question}
           </h2>
         </div>
       </header>
 
-      <Separator className="bg-border/50" />
+      <Separator className="bg-border/30" />
 
       <article className="prose prose-invert max-w-none">
-        <div className="flex items-start gap-large">
-          <div className="hidden md:flex flex-col items-center gap-2 pt-1 opacity-20">
-            <div className="w-px h-12 bg-primary" />
+        <div className="flex items-start gap-xlarge">
+          <div className="hidden md:flex flex-col items-center gap-4 pt-2 opacity-20">
+            <div className="w-[1px] h-16 bg-gradient-to-b from-primary to-transparent" />
             <BookOpen className="size-5" />
-            <div className="w-px h-full bg-border" />
+            <div className="w-[1px] h-full bg-border" />
           </div>
           <div className="flex-1">
-            <p className="text-lg md:text-xl text-foreground/90 leading-relaxed font-body whitespace-pre-wrap selection:bg-primary/30">
+            <p className="answer-body whitespace-pre-wrap selection:bg-primary/20 transition-all duration-300">
               {answer}
             </p>
           </div>
@@ -73,9 +77,11 @@ function AnswerContent() {
       </article>
 
       <footer className="pt-xlarge border-t border-border/20 text-center">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-[0.4em] font-medium">
-          Academic Archive • Reference Verified
-        </p>
+        <div className="inline-block px-4 py-1 rounded-full border border-border/40 bg-secondary/10">
+          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.4em] font-bold opacity-60">
+            Academic Archive • Reference Verified
+          </p>
+        </div>
       </footer>
     </div>
   );
@@ -84,7 +90,14 @@ function AnswerContent() {
 export default function AnswerPage() {
   return (
     <AppShell>
-      <Suspense fallback={<div className="p-xlarge text-center text-muted-foreground italic font-headline">Retrieving academic record...</div>}>
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center space-y-medium">
+            <div className="size-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto opacity-50" />
+            <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Retrieving Record</p>
+          </div>
+        </div>
+      }>
         <AnswerContent />
       </Suspense>
     </AppShell>
