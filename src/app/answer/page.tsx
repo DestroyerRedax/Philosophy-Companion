@@ -10,12 +10,48 @@ import { setLastRead, isBookmarked, toggleBookmark } from '@/lib/storage-service
 import { SearchResult } from '@/lib/search-service';
 import { useToast } from '@/hooks/use-toast';
 import { subjectRegistry } from '@/data/registry';
+import { cn } from '@/lib/utils';
 
 /**
- * Answer View Component - Premium Polish
- * Provides an optimal reading environment.
- * Now fetches data from Registry via IDs to avoid 414 error.
+ * Helper component to render formatted academic text.
+ * Bolds headers like ভূমিকা, উপসংহার, points (১., ২.), and sub-points.
  */
+function FormattedAnswer({ content }: { content: string }) {
+  const lines = content.split('\n');
+  
+  return (
+    <div className="space-y-4">
+      {lines.map((line, index) => {
+        const trimmed = line.trim();
+        // Regular expression to match points like ১., ২., or sub-points
+        const isPoint = /^\d+\./.test(trimmed);
+        const isStructural = trimmed.startsWith('ভূমিকা') || 
+                             trimmed.startsWith('উপসংহার') || 
+                             trimmed.startsWith('উপস্থাপনা') ||
+                             trimmed.startsWith('সারসংক্ষেপ');
+        const isSubPoint = trimmed.startsWith('উপ-পয়েন্ট') || trimmed.includes('সাব পয়েন্ট');
+
+        if (isStructural || isPoint || isSubPoint) {
+          return (
+            <p key={index} className="font-bold text-foreground text-xl md:text-2xl mt-8 mb-4">
+              {line}
+            </p>
+          );
+        }
+
+        return (
+          <p key={index} className={cn(
+            "text-foreground/85 leading-[1.8] text-lg font-body",
+            trimmed === "" ? "h-2" : ""
+          )}>
+            {line}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 function AnswerContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -128,9 +164,7 @@ function AnswerContent() {
             <div className="w-[1px] h-full bg-border" />
           </div>
           <div className="flex-1">
-            <div className="answer-body whitespace-pre-wrap selection:bg-primary/20 transition-all duration-300">
-              {data.answer}
-            </div>
+            <FormattedAnswer content={data.answer} />
           </div>
         </div>
       </article>

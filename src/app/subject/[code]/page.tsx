@@ -100,7 +100,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ code: 
                                 <AccordionContent className="px-xlarge py-medium text-muted-foreground border-l-2 border-primary/20 ml-medium">
                                   <div className="flex gap-2">
                                     <HelpCircle className="size-4 text-primary shrink-0 mt-0.5" />
-                                    <p className="text-sm italic">{q.answer}</p>
+                                    <p className="text-sm italic font-medium text-foreground/90">{q.answer}</p>
                                   </div>
                                 </AccordionContent>
                               </AccordionItem>
